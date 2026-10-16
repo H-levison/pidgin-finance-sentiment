@@ -10,12 +10,12 @@ from __future__ import annotations
 
 import re
 
-import pandas as pd
 import streamlit as st
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 MODEL_ID = "HonourGod001/pidgin-sentiment-afroxlmr"
+MODEL_URL = f"https://huggingface.co/{MODEL_ID}"
 MAX_LENGTH = 128
 
 st.set_page_config(
@@ -31,11 +31,16 @@ PIDGIN_MARKERS = re.compile(
     r"oga|pikin|sabi|sef|sha|shey|una|waka|wahala|wetin|wey|yawa)(?![a-z])"
 )
 
+# Sentiment is a polarity scale, so the two poles get warm and cool hues and the
+# midpoint stays grey. Streamlit's own colour names keep this readable in both
+# light and dark mode without the app having to know which is active.
+TONE = {"negative": "red", "neutral": "gray", "positive": "blue"}
+
 EXAMPLES = [
-    "dis platform na scam, make you no put your money there",
-    "i just withdraw my money, e enter sharp sharp",
-    "btc price reach hundred thousand dollar today",
-    "na very good exchange, dem swallow my money since january",
+    ("Scam warning", "dis platform na scam, make you no put your money there"),
+    ("Fast payout", "i just withdraw my money, e enter sharp sharp"),
+    ("Plain fact", "btc price reach hundred thousand dollar today"),
+    ("Sarcasm", "na very good exchange, dem swallow my money since january"),
 ]
 
 
@@ -61,82 +66,92 @@ def classify(text):
     return {id2label[i]: float(p) for i, p in enumerate(probabilities)}
 
 
-def verdict_markdown(scores):
-    ranked = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
-    label, score = ranked[0]
-    icon = {"negative": "🔴", "neutral": "⚪", "positive": "🔵"}[label]
-    return f"{icon} **{label}** · {score:.0%} confident", ranked
+def notes_for(text, scores, top_label, top_score):
+    """Say where the answer should not be trusted, rather than leaving the
+    viewer to find out."""
+    notes = []
+    if not PIDGIN_MARKERS.search(text.lower()):
+        notes.append("No Pidgin markers found — the model only knows Pidgin.")
+    if top_score < 0.70:
+        notes.append("Low confidence, and these scores are not calibrated.")
+    if scores.get("neutral", 0) < 0.10 and top_label != "neutral":
+        notes.append(
+            f"Neutral scored {scores['neutral']:.0%}. It stays near zero "
+            "whatever you type."
+        )
+    return notes
 
 
-st.title("Pidgin sentiment")
-st.caption(
-    "Type Nigerian Pidgin about money, crypto or trading. The model replies "
-    "with the sentiment it reads."
-)
+def render_reply(turn):
+    scores, top_label, top_score = turn["scores"], turn["label"], turn["score"]
+    st.markdown(f"### :{TONE[top_label]}[{top_label}]  ·  {top_score:.0%}")
+    for label, value in sorted(scores.items(), key=lambda kv: kv[1], reverse=True):
+        left, right = st.columns([5, 1], vertical_alignment="center")
+        with left:
+            st.progress(value, text=f":{TONE[label]}[{label}]")
+        with right:
+            st.markdown(
+                f"<div style='text-align:right;font-variant-numeric:tabular-nums;"
+                f"opacity:.75'>{value:.0%}</div>",
+                unsafe_allow_html=True,
+            )
+    for note in turn["notes"]:
+        st.caption(note)
+
+
+with st.sidebar:
+    st.markdown("#### Pidgin sentiment")
+    st.caption(
+        f"AfroXLM-R fine-tuned on AfriSenti (pcm). Test accuracy **0.697**, "
+        f"against 0.676 published. [Model card]({MODEL_URL})"
+    )
+    with st.expander("Why it never says neutral"):
+        st.markdown(
+            """
+It has exactly three outputs — negative, neutral, positive — and no way to
+abstain, so a softmax spreads every input across them. Unrelated text still
+gets a label.
+
+Neutral is the broken one. The training split held **51** neutral examples
+against roughly 3,400 of the others, and the model scored F1 **0.000** on
+neutral across three seeds, never predicting it once.
+
+Adding every other labelled neutral Pidgin corpus that exists lifted it only
+to 0.035.
+"""
+        )
+    if st.session_state.get("history"):
+        if st.button("Clear", icon=":material/restart_alt:", width="stretch"):
+            st.session_state.history = []
+            st.rerun()
 
 if "history" not in st.session_state:
     st.session_state.history = []
 if "queued" not in st.session_state:
     st.session_state.queued = None
 
-with st.sidebar:
-    st.subheader("About this model")
-    st.markdown(
-        """
-Fine-tuned from **AfroXLM-R** on the Nigerian Pidgin portion of **AfriSenti**
-(SemEval-2023 Task 12).
-
-Test accuracy **0.697** across three seeds, against **0.676** published for this
-model and language.
-"""
-    )
-    st.divider()
-    st.subheader("It has three outputs")
-    st.markdown(
-        """
-`negative` · `neutral` · `positive`
-
-That is the whole set. The classifier cannot abstain or say *not applicable* —
-a softmax spreads every input across these three, so unrelated text still gets
-a label.
-"""
-    )
-    st.divider()
-    st.subheader("Neutral never wins")
-    st.markdown(
-        """
-The training split held **51** neutral examples against roughly **3,400**
-negative and positive ones. On the held-out test set the model scored an F1 of
-**0.000** on neutral across all three seeds, never once predicting it.
-
-Watch the neutral bar: it sits near zero whatever you type.
-"""
-    )
-    if st.button("Clear conversation", icon=":material/restart_alt:"):
-        st.session_state.history = []
-        st.rerun()
-
 if not st.session_state.history:
-    st.markdown("**Try one of these**")
+    st.title("Pidgin sentiment")
+    st.caption(
+        "Write Nigerian Pidgin about money, crypto or trading. "
+        "The last two examples are ones it gets wrong."
+    )
     columns = st.columns(2)
-    for i, example in enumerate(EXAMPLES):
+    for i, (name, example) in enumerate(EXAMPLES):
         with columns[i % 2]:
-            if st.button(example, key=f"ex{i}", width="stretch"):
+            if st.button(
+                f"**{name}**  \n{example[:38]}…",
+                key=f"ex{i}",
+                width="stretch",
+            ):
                 st.session_state.queued = example
                 st.rerun()
 
 for turn in st.session_state.history:
     with st.chat_message("user", avatar=":material/person:"):
         st.write(turn["text"])
-    with st.chat_message("assistant", avatar=":material/analytics:"):
-        st.markdown(turn["verdict"])
-        frame = pd.DataFrame(
-            {"label": [k for k, _ in turn["ranked"]],
-             "probability": [v for _, v in turn["ranked"]]}
-        )
-        st.bar_chart(frame, x="label", y="probability", horizontal=True, height=150)
-        for note in turn["notes"]:
-            st.caption(note)
+    with st.chat_message("assistant", avatar=":material/graphic_eq:"):
+        render_reply(turn)
 
 typed = st.chat_input("Write Pidgin here…")
 text = typed or st.session_state.queued
@@ -145,32 +160,15 @@ st.session_state.queued = None
 if text and text.strip():
     with st.spinner("Reading…"):
         scores = classify(text)
-    verdict, ranked = verdict_markdown(scores)
-
-    notes = []
-    if not PIDGIN_MARKERS.search(text.lower()):
-        notes.append(
-            "No obvious Pidgin markers in this text. The model was trained on "
-            "Pidgin only, so treat the result as unreliable."
-        )
-    if ranked[0][1] < 0.70:
-        notes.append(
-            "Low confidence. These probabilities are uncalibrated and do not "
-            "separate the model's right answers from its wrong ones."
-        )
-    if scores.get("neutral", 0) < 0.10:
-        notes.append(
-            f"Neutral scored {scores.get('neutral', 0):.0%}. It is pinned near "
-            "zero for almost any input, which is this project's main finding."
-        )
-
-    st.session_state.history.append(
-        {"text": text, "verdict": verdict, "ranked": ranked, "notes": notes}
-    )
+    top_label, top_score = max(scores.items(), key=lambda kv: kv[1])
+    st.session_state.history.append({
+        "text": text,
+        "scores": scores,
+        "label": top_label,
+        "score": top_score,
+        "notes": notes_for(text, scores, top_label, top_score),
+    })
     st.rerun()
 
-st.divider()
-st.caption(
-    "Not financial advice. University NLP project — "
-    "[model card](https://huggingface.co/HonourGod001/pidgin-sentiment-afroxlmr)"
-)
+if st.session_state.history:
+    st.caption("Not financial advice. University NLP project.")

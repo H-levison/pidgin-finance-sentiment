@@ -8,10 +8,37 @@ fileWatcherType = "none"
 [logger]
 level = "warning"
 
-[theme]
-base = "light"
+# No `base` key: setting one pins the app to that mode. With both variants
+# defined, the app follows the viewer's own light or dark setting.
+
+[theme.light]
 primaryColor = "#2a78d6"
 backgroundColor = "#fbfaf8"
 secondaryBackgroundColor = "#f1efea"
 textColor = "#16150f"
-font = "sans-serif"
+borderColor = "#e1ded4"
+linkColor = "#2a78d6"
+redColor = "#e34948"
+blueColor = "#2a78d6"
+grayColor = "#6b6962"
+chartCategoricalColors = ["#2a78d6", "#52514e", "#e34948"]
+
+[theme.light.sidebar]
+backgroundColor = "#f6f4ef"
+secondaryBackgroundColor = "#eceae3"
+
+[theme.dark]
+primaryColor = "#5d9df0"
+backgroundColor = "#14141a"
+secondaryBackgroundColor = "#1d1d25"
+textColor = "#f1efe9"
+borderColor = "#32323c"
+linkColor = "#7fb4f5"
+redColor = "#f06d6c"
+blueColor = "#5d9df0"
+grayColor = "#a5a299"
+chartCategoricalColors = ["#5d9df0", "#a5a299", "#f06d6c"]
+
+[theme.dark.sidebar]
+backgroundColor = "#101016"
+secondaryBackgroundColor = "#1a1a22"
