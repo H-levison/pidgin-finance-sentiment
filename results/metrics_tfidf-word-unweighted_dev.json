@@ -1,0 +1,25 @@
+{
+  "accuracy": 0.6643,
+  "macro_f1": 0.3678,
+  "weighted_f1": 0.6076,
+  "per_class": {
+    "negative": {
+      "precision": 0.6726,
+      "recall": 0.925,
+      "f1": 0.7789,
+      "support": 813
+    },
+    "neutral": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 21
+    },
+    "positive": {
+      "precision": 0.6074,
+      "recall": 0.2215,
+      "f1": 0.3246,
+      "support": 447
+    }
+  }
+}
