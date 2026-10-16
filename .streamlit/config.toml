@@ -1,0 +1,9 @@
+[server]
+# Streamlit's module watcher walks every imported package. transformers lazily
+# exposes hundreds of vision modules that import torchvision, which this app
+# does not need, so the watcher logs a traceback for each one. Nothing to watch
+# in a deployment anyway: the code does not change at runtime.
+fileWatcherType = "none"
+
+[logger]
+level = "warning"
