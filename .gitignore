@@ -1,0 +1,30 @@
+# The AfriSenti corpus is CC BY-NC-SA 4.0 and is not redistributed here.
+# src/download_data.py fetches it from the official task repository instead.
+data/raw/
+data/processed/
+
+# Prediction dumps contain the AfriSenti tweet text verbatim, so committing them
+# would redistribute the corpus by another route. Regenerate them with
+# src/finetune.py --eval-test, or src/evaluate_finance.py.
+results/predictions_*.csv
+
+# data/annotation/ IS tracked on purpose: the collected posts and their hand
+# labels are this project's own contribution, not someone else's dataset.
+
+# Checkpoints and caches. Keep these out of OneDrive, see README.
+models/
+artifacts/
+*.pt
+*.bin
+*.safetensors
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+.ipynb_checkpoints/
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
