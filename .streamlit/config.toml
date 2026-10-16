@@ -7,3 +7,11 @@ fileWatcherType = "none"
 
 [logger]
 level = "warning"
+
+[theme]
+base = "light"
+primaryColor = "#2a78d6"
+backgroundColor = "#fbfaf8"
+secondaryBackgroundColor = "#f1efea"
+textColor = "#16150f"
+font = "sans-serif"
