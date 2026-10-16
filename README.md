@@ -9,7 +9,7 @@ general Pidgin tweets still work when people are talking about money".
 **Links**
 
 - Fine-tuned model: https://huggingface.co/HonourGod001/pidgin-sentiment-afroxlmr
-- Live app: _Streamlit Community Cloud, link to add after deploy_
+- Live app: https://pidgin-finance-sentiment-teqkbc7emkz6hhqlnaoex3.streamlit.app/
 - Demo video: _to add_
 - Report: _to add_
 
@@ -200,6 +200,53 @@ the leakage from the extra data volume that `train_full` also brings.
 add roughly 1 more. The neutral class only becomes non-zero in the leaky
 conditions, which is the clearest sign of what is happening: the model is
 recognising memorised tweets, not learning the class.
+
+### Can the neutral class be rescued with more data?
+
+NaijaSenti is usually named as the other Nigerian Pidgin sentiment corpus, but
+its `pcm` files are byte-for-byte identical to AfriSenti's: the same SHA-256 on
+train, dev and test. The two releases share the same Pidgin data, so it adds
+nothing.
+
+Two smaller corpora do add neutral examples, both CC BY 4.0:
+
+| source | rows | negative | positive | neutral |
+|---|---|---|---|---|
+| WAZOBIALABS/nigerian-pidgin-voice-text | 500 | 263 | 160 | 77 |
+| WAZOBIALABS/nigerian-pidgin-eval | 230 | 143 | 76 | 11 |
+
+Together they carry 88 neutral examples against the 51 in the training split, so
+adding them roughly triples the neutral evidence available. They are transcribed
+speech rather than tweets, so the register differs. `src/augment_neutral.py`
+builds the combined split and the result is reported below.
+
+### Result: adding neutral data moves the class off zero
+
+Same model, same budget, same seed. Only the training split differs.
+
+| training split | neutral rows | neutral weight | neutral F1 | neutral recall | accuracy | macro F1 |
+|---|---|---|---|---|---|---|
+| `train_dedup` | 51 | 22.78 | **0.000** | 0.000 | 0.697 | 0.479 |
+| `train_augmented` | 118 | 11.14 | **0.035** | 0.019 | 0.696 | 0.489 |
+
+The model predicts neutral for the first time: 8 of the 431 neutral test posts,
+at 0.286 precision.
+
+The weight column is the part worth reading twice. Adding neutral examples also
+*lowers* their inverse-frequency weight, from 22.78 to 11.14, so the augmented
+run had half the loss pressure towards neutral and still did better. Sixty-seven
+extra examples beat halving the weight. That is as clean a separation as this
+data allows between evidence and reweighting: only one of them helps.
+
+It is still a broken classifier. 1.9% recall is not usable, and overall accuracy
+is unchanged within seed noise. Doubling the neutral evidence bought almost
+nothing in practice, which suggests the shortfall is on the order of thousands
+of examples rather than dozens.
+
+Caveats: the added rows are transcribed speech rather than tweets, so register
+differs; and `nigerian-pidgin-eval` is distributed as an evaluation set, so it
+is used here only to test the data-scarcity hypothesis and never to report a
+score.
 
 ### Measurement noise
 
