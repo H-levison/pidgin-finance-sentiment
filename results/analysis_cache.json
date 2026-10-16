@@ -1,0 +1,144 @@
+{
+  "afrisenti_test": {
+    "n": 4154,
+    "accuracy": 0.6938,
+    "confusion": {
+      "negative": {
+        "negative": 1975,
+        "neutral": 7,
+        "positive": 344
+      },
+      "neutral": {
+        "negative": 264,
+        "neutral": 0,
+        "positive": 167
+      },
+      "positive": {
+        "negative": 490,
+        "neutral": 0,
+        "positive": 907
+      }
+    },
+    "true_counts": {
+      "negative": 2326,
+      "neutral": 431,
+      "positive": 1397
+    },
+    "pred_counts": {
+      "negative": 2729,
+      "neutral": 7,
+      "positive": 1418
+    },
+    "error_by_length": {
+      "1-10": {
+        "error_rate": 0.4054,
+        "posts": 1189
+      },
+      "11-20": {
+        "error_rate": 0.31,
+        "posts": 1503
+      },
+      "21-35": {
+        "error_rate": 0.2291,
+        "posts": 995
+      },
+      "36+": {
+        "error_rate": 0.2056,
+        "posts": 467
+      }
+    },
+    "accuracy_excluding_neutral": 0.7741
+  },
+  "afrisenti_lengthmatched": {
+    "n": 2146,
+    "accuracy": 0.7591,
+    "confusion": {
+      "negative": {
+        "negative": 1136,
+        "neutral": 7,
+        "positive": 181
+      },
+      "neutral": {
+        "negative": 55,
+        "neutral": 0,
+        "positive": 37
+      },
+      "positive": {
+        "negative": 237,
+        "neutral": 0,
+        "positive": 493
+      }
+    },
+    "true_counts": {
+      "negative": 1324,
+      "neutral": 92,
+      "positive": 730
+    },
+    "pred_counts": {
+      "negative": 1428,
+      "neutral": 7,
+      "positive": 711
+    },
+    "error_by_length": {
+      "11-20": {
+        "error_rate": 0.2822,
+        "posts": 684
+      },
+      "21-35": {
+        "error_rate": 0.2291,
+        "posts": 995
+      },
+      "36+": {
+        "error_rate": 0.2056,
+        "posts": 467
+      }
+    },
+    "accuracy_excluding_neutral": 0.7931
+  },
+  "finance_test": {
+    "n": 109,
+    "accuracy": 0.3394,
+    "confusion": {
+      "negative": {
+        "negative": 15,
+        "neutral": 0,
+        "positive": 3
+      },
+      "neutral": {
+        "negative": 33,
+        "neutral": 0,
+        "positive": 18
+      },
+      "positive": {
+        "negative": 18,
+        "neutral": 0,
+        "positive": 22
+      }
+    },
+    "true_counts": {
+      "negative": 18,
+      "neutral": 51,
+      "positive": 40
+    },
+    "pred_counts": {
+      "negative": 66,
+      "neutral": 0,
+      "positive": 43
+    },
+    "error_by_length": {
+      "11-20": {
+        "error_rate": 0.5,
+        "posts": 2
+      },
+      "21-35": {
+        "error_rate": 0.5,
+        "posts": 6
+      },
+      "36+": {
+        "error_rate": 0.6733,
+        "posts": 101
+      }
+    },
+    "accuracy_excluding_neutral": 0.6379
+  }
+}
