@@ -1,0 +1,195 @@
+{
+  "source": "AfriSenti (SemEval-2023 Task 12), Nigerian Pidgin (pcm)",
+  "source_url": "https://github.com/afrisenti-semeval/afrisent-semeval-2023",
+  "licence": "CC BY-NC-SA 4.0",
+  "label_order": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "split_sizes": {
+    "train_full": 5121,
+    "train_full_sub": 3486,
+    "train_dedup": 3486,
+    "dev": 1281,
+    "test": 4154
+  },
+  "per_split": [
+    {
+      "split": "train_full",
+      "rows": 5121,
+      "labels": {
+        "negative": 3241,
+        "neutral": 72,
+        "positive": 1808
+      },
+      "label_pct": {
+        "negative": 63.29,
+        "neutral": 1.41,
+        "positive": 35.31
+      },
+      "duplicate_texts": 512,
+      "tokens_mean": 24.4,
+      "tokens_median": 21,
+      "tokens_p95": 50,
+      "tokens_max": 66,
+      "with_non_ascii": 397,
+      "with_user_tag": 0,
+      "with_http": 0,
+      "vocab_size": 10611
+    },
+    {
+      "split": "train_full_sub",
+      "rows": 3486,
+      "labels": {
+        "negative": 2221,
+        "neutral": 42,
+        "positive": 1223
+      },
+      "label_pct": {
+        "negative": 63.71,
+        "neutral": 1.2,
+        "positive": 35.08
+      },
+      "duplicate_texts": 260,
+      "tokens_mean": 24.2,
+      "tokens_median": 21,
+      "tokens_p95": 50,
+      "tokens_max": 66,
+      "with_non_ascii": 262,
+      "with_user_tag": 0,
+      "with_http": 0,
+      "vocab_size": 8534
+    },
+    {
+      "split": "train_dedup",
+      "rows": 3486,
+      "labels": {
+        "negative": 2287,
+        "neutral": 51,
+        "positive": 1148
+      },
+      "label_pct": {
+        "negative": 65.61,
+        "neutral": 1.46,
+        "positive": 32.93
+      },
+      "duplicate_texts": 0,
+      "tokens_mean": 24.6,
+      "tokens_median": 22,
+      "tokens_p95": 50,
+      "tokens_max": 66,
+      "with_non_ascii": 275,
+      "with_user_tag": 0,
+      "with_http": 0,
+      "vocab_size": 8936
+    },
+    {
+      "split": "dev",
+      "rows": 1281,
+      "labels": {
+        "negative": 813,
+        "neutral": 21,
+        "positive": 447
+      },
+      "label_pct": {
+        "negative": 63.47,
+        "neutral": 1.64,
+        "positive": 34.89
+      },
+      "duplicate_texts": 34,
+      "tokens_mean": 24.4,
+      "tokens_median": 22,
+      "tokens_p95": 49,
+      "tokens_max": 63,
+      "with_non_ascii": 104,
+      "with_user_tag": 0,
+      "with_http": 0,
+      "vocab_size": 4712
+    },
+    {
+      "split": "test",
+      "rows": 4154,
+      "labels": {
+        "negative": 2326,
+        "neutral": 431,
+        "positive": 1397
+      },
+      "label_pct": {
+        "negative": 55.99,
+        "neutral": 10.38,
+        "positive": 33.63
+      },
+      "duplicate_texts": 0,
+      "tokens_mean": 19.1,
+      "tokens_median": 16,
+      "tokens_p95": 46,
+      "tokens_max": 63,
+      "with_non_ascii": 242,
+      "with_user_tag": 0,
+      "with_http": 0,
+      "vocab_size": 8724
+    }
+  ],
+  "overlap_audit": {
+    "duplicate_texts_within_train": 512,
+    "train_texts_also_in_dev": 291,
+    "train_texts_also_in_test": 1013,
+    "dev_texts_also_in_test": 266,
+    "test_rows_reachable_from_train_pct": 22.29,
+    "label_agreement_on_train_test_overlap": 0.8776,
+    "contradictory_label_count": 124,
+    "contradictory_examples": [
+      {
+        "text": "today marks one small milestone in the beautiful journey of lifei believe dat im the equivalent to a fine wine or a deli",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "gaskiya na sha wahala na bils they call me attention seeker e choke",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "they say out wit old and in wit newbut im not letting go of good friends like uthank u for being an incredible frndtank ",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "you are asking me how thing do you even know how i feel im madly in love with you i just hope you can see but na lie u g",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "if you love rap song go and listen to ft eriggaraw dey burst my head abeg every verse is raw even the fly gangsta album ",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "yeah i just checked and i see u make burger trust me im not a beggar but my love for dis picture is bigger baby i want u",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "just look at me making mouth on this day \u200d\ufe0f ase i was just doing myself babe wen i dey toast don dey collect better body",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "good lord in heaven spare me bad energy and bad vibes ya allah help me i gats to use others bad situation as my prayer p",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "i played straight from my heart for this taxify driver when the song finished he said abeg you fit play that your straig",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      },
+      {
+        "text": "but wait on magbe with said ki eba toh jina kan le dada ori na la ma ti ro but dem no dey turn eba ontop fire i wish say",
+        "label_in_train": "negative",
+        "label_in_test": "positive"
+      }
+    ]
+  }
+}
