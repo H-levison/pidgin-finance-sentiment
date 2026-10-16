@@ -1,23 +1,10 @@
-# Install PyTorch first with the CUDA build that matches your driver:
-#   pip install torch --index-url https://download.pytorch.org/whl/cu124
-# On a CPU-only machine just: pip install torch
+# Runtime dependencies for the deployed Streamlit app.
+# Streamlit Community Cloud installs this file automatically.
+# For training and evaluation, use requirements-train.txt instead.
 
+streamlit>=1.40
 transformers>=4.44
-datasets>=2.20
-accelerate>=0.33
-scikit-learn>=1.5
-pandas>=2.2
-numpy>=1.26
-matplotlib>=3.9
-seaborn>=0.13
-gradio>=4.40
+torch>=2.0
 sentencepiece>=0.2
-
-# protobuf is needed to read SentencePiece vocab files. Without it transformers
-# silently falls back to a tiktoken extractor and AfriBERTa's tokenizer fails to
-# load with a confusing "Error parsing line" message.
 protobuf>=4.25
-
-# Word2Vec for the BiLSTM experiment. 4.4.0 ships a Python 3.13 wheel; older
-# releases do not, so pin at or above it if you are on 3.13.
-gensim>=4.4
+pandas>=2.2

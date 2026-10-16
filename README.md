@@ -17,7 +17,7 @@ The app is a Streamlit interface (`streamlit_app.py`) that loads the model from
 the Hugging Face Hub, so the same file runs locally and in the cloud:
 
 ```bash
-pip install -r requirements-app.txt
+pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
@@ -243,7 +243,7 @@ app/                   web interface
 python -m venv .venv
 .venv/Scripts/activate            # Windows
 pip install torch --index-url https://download.pytorch.org/whl/cu124
-pip install -r requirements.txt
+pip install -r requirements-train.txt
 
 python src/download_data.py
 python src/prepare_data.py

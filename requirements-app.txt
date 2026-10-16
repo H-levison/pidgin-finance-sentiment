@@ -1,9 +1,0 @@
-# Dependencies for the deployed Streamlit app (Streamlit Community Cloud reads
-# this). Kept separate from requirements.txt, which covers training too and
-# would pull in far more than the app needs.
-streamlit>=1.40
-transformers>=4.44
-torch>=2.0
-sentencepiece>=0.2
-protobuf>=4.25
-pandas>=2.2
