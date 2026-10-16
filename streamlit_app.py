@@ -24,12 +24,39 @@ st.set_page_config(
     layout="centered",
 )
 
-# Markers that are rarely standard English. Used only to warn the viewer when
-# the input does not look like Pidgin, never to change the prediction.
-PIDGIN_MARKERS = re.compile(
+# Pidgin detection, used only to warn the viewer when the input does not look
+# like Pidgin. It never changes the prediction.
+#
+# Two tiers, because a single list fails either way. Words like "dey" and
+# "wetin" are almost never standard English, so one is enough. Words like "na",
+# "dis" and "make" are ordinary English too, so several are needed before they
+# mean anything. An earlier version used only the first tier and reported "no
+# Pidgin markers" on plainly Pidgin sentences such as
+# "dis platform na scam, make you no put your money there".
+STRONG_MARKERS = re.compile(
     r"(?<![a-z])(abeg|abi|biko|chop|comot|dem|dey|ehn|gbadun|jare|naim|nawa|"
-    r"oga|pikin|sabi|sef|sha|shey|una|waka|wahala|wetin|wey|yawa)(?![a-z])"
+    r"oga|pikin|sabi|sef|sha|shey|una|waka|wahala|wetin|wey|yawa|oyibo|"
+    r"gist|jor|kpata|wahalla)(?![a-z])"
 )
+WEAK_MARKERS = re.compile(
+    r"(?<![a-z])(na|don|fit|nor|dat|dis|im|go|make|say|no|get|take|put|"
+    r"plenty|small|well|dey|una|e)(?![a-z])"
+)
+
+
+def looks_like_pidgin(text, min_weak=1):
+    """True if there is any sign of Pidgin.
+
+    The warning this feeds should be rare, so the bar is deliberately low: one
+    marker of either tier is enough. A heuristic this crude will never classify
+    Pidgin reliably, and a warning that fires on real Pidgin is worse than one
+    that occasionally stays quiet.
+    """
+    lowered = text.lower()
+    if STRONG_MARKERS.search(lowered):
+        return True
+    return len(set(WEAK_MARKERS.findall(lowered))) >= min_weak
+
 
 # Sentiment is a polarity scale, so the two poles get warm and cool hues and the
 # midpoint stays grey. Streamlit's own colour names keep this readable in both
@@ -67,18 +94,20 @@ def classify(text):
 
 
 def notes_for(text, scores, top_label, top_score):
-    """Say where the answer should not be trusted, rather than leaving the
-    viewer to find out."""
+    """Flag the cases where this answer should not be trusted.
+
+    Only conditions that are genuinely exceptional belong here. The neutral
+    score sits near zero for any input, so warning about it on every reply would be
+    constant noise; it is stated once in the sidebar instead.
+    """
     notes = []
-    if not PIDGIN_MARKERS.search(text.lower()):
-        notes.append("No Pidgin markers found — the model only knows Pidgin.")
+    if not looks_like_pidgin(text):
+        notes.append(
+            "This may not be Pidgin. The model was trained on Pidgin only, "
+            "so the answer is unreliable here."
+        )
     if top_score < 0.70:
         notes.append("Low confidence, and these scores are not calibrated.")
-    if scores.get("neutral", 0) < 0.10 and top_label != "neutral":
-        notes.append(
-            f"Neutral scored {scores['neutral']:.0%}. It stays near zero "
-            "whatever you type."
-        )
     return notes
 
 
@@ -113,11 +142,14 @@ abstain, so a softmax spreads every input across them. Unrelated text still
 gets a label.
 
 Neutral is the broken one. The training split held **51** neutral examples
-against roughly 3,400 of the others, and the model scored F1 **0.000** on
-neutral across three seeds, never predicting it once.
+against roughly 3,400 of the others, and this model scored F1 **0.000** on
+neutral across three seeds, never predicting it once. That is the model
+running here.
 
-Adding every other labelled neutral Pidgin corpus that exists lifted it only
-to 0.035.
+A separate experiment added every other labelled neutral Pidgin corpus that
+exists, roughly doubling the class, and lifted it only to 0.035 — the first
+neutral predictions, but still 1.9% recall. That variant is reported in the
+results, not deployed here.
 """
         )
     if st.session_state.get("history"):
