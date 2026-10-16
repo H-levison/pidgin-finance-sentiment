@@ -28,3 +28,5 @@ run_at,experiment,split,accuracy,macro_f1,weighted_f1,f1_negative,f1_neutral,f1_
 2026-10-16T23:29:57,tfidf-word-balanced,dev,0.6651,0.424,0.6575,0.7478,0.0,0.5241,"train=train_dedup, features=word, class_weight=balanced, C=1.0"
 2026-10-16T23:48:58,tfidf-word-balanced,dev,0.6651,0.424,0.6575,0.7478,0.0,0.5241,"train=train_dedup, features=word, class_weight=balanced, C=1.0"
 2026-10-16T23:49:40,tfidf-word-balanced,dev,0.6651,0.424,0.6575,0.7478,0.0,0.5241,"train=train_dedup, features=word, class_weight=balanced, C=1.0"
+2026-10-17T00:54:35,afro-xlmr-base-weighted-aug,dev,0.7377,0.4797,0.7313,0.8022,0.0,0.6369,"train=train_augmented, lr=2e-05, bs=16, epochs=6, max_len=128, class_weight=True, seed=42, 9.3min"
+2026-10-17T00:54:54,afro-xlmr-base-weighted-aug,test,0.6964,0.489,0.6602,0.7824,0.0349,0.6497,"train=train_augmented, lr=2e-05, bs=16, epochs=6, max_len=128, class_weight=True, seed=42, 9.3min"

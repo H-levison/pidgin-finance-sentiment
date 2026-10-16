@@ -85,7 +85,7 @@ def main(argv=None):
     parser.add_argument("--features", choices=("word", "char"), default="word")
     parser.add_argument(
         "--train",
-        choices=("train_dedup", "train_full", "train_full_sub"),
+        choices=("train_dedup", "train_full", "train_full_sub", "train_augmented"),
         default="train_dedup",
         help="train_full keeps the leakage in the original release",
     )
