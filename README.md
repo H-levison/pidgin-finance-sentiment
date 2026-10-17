@@ -26,11 +26,16 @@ there, so no checkpoint is committed to this repository.
 
 ## Why this task and this language
 
-Nigerian Pidgin is spoken by a very large number of people across West Africa
-and is heavily used on Nigerian social media, but it has far fewer NLP resources
-than its speaker count suggests. It is also the language a lot of Nigerian
-crypto and fintech conversation actually happens in, which matters if anyone
-wants to track how users talk about a payment service, an exchange or a scam.
+Nigerian Pidgin has roughly 121 million speakers (Ethnologue, 2025), about five
+million of them first-language, which makes it the most widely spoken language
+in Africa and close to half the population of Nigeria. It has no official status
+and far fewer NLP resources than that count suggests.
+
+Nigeria also ranks third in the Chainalysis 2026 Global Crypto Adoption Index
+and first in the world for domestic peer-to-peer cryptocurrency activity. A
+great deal of retail crypto discussion therefore happens in Pidgin, on forums
+and social media, and anyone running an exchange or payment service there who
+does not speak Pidgin needs a model to read it.
 
 There are published sentiment models for Pidgin. What does not exist, as far as
 I could find, is any labelled Pidgin data for the finance and crypto domain, so
