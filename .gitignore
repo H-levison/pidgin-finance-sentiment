@@ -28,3 +28,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Word lock files, created while a .docx is open
+~$*
