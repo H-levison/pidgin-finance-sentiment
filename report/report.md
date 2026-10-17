@@ -1,7 +1,7 @@
 # Sentiment Classification for Nigerian Pidgin, and Whether It Transfers to Financial Discussion
 
-**Author:** Levison
-**Course:** Machine Learning Techniques II — Summative Project
+**Author:** HonourGod Kilechukwu Levison
+**Course:** Machine Learning Techniques I — Summative Project
 **Date:** October 2026
 
 **Project links**
@@ -53,22 +53,36 @@ composition of the only labelled data that exists for this language.
 ## 2. Introduction
 
 Nigerian Pidgin, written `pcm` in ISO 639-3, is an English-lexifier creole
-spoken across Nigeria and neighbouring countries. It is one of the main
-languages of informal Nigerian online discussion. It also has far fewer NLP
-resources than the size of its speaker population would suggest, which is the
-usual position for African languages.
+spoken across Nigeria and neighbouring countries. Ethnologue's 2025 figures put
+it at roughly 121 million speakers, of whom about 5 million use it as a first
+language and 116 million as a second, which makes it the most widely spoken
+language in Africa and around the fourteenth most spoken in the world. Against a
+Nigerian population of roughly 240 million, that is close to half the country.
+Adelani et al. (2024) cite a comparable figure of about 120 million. It has no
+official status and is used almost entirely informally, which is part of why it
+is under-resourced: the written Pidgin that exists is mostly social media and
+forum text rather than the news and government corpora that NLP usually draws on.
+
+The second half of the problem is where that language meets money. Nigeria ranks
+third in the Chainalysis Global Crypto Adoption Index for 2026 and, more to the
+point here, first in the world for domestic peer-to-peer cryptocurrency activity.
+Earlier editions placed it second in 2024 and sixth in 2025, so the exact rank
+moves, but the pattern does not: a very large volume of ordinary retail crypto
+activity, much of it peer-to-peer, conducted by a population half of whom speak
+Pidgin.
+
+Those two facts meet on Nigerian forums and social media, and they create a
+practical gap. A company running an exchange or a payment service in Nigeria,
+and anyone studying how users talk about one, needs to read sentiment in Pidgin.
+If they do not speak it themselves, they need a model. This project asks whether
+the models that exist are fit for that.
 
 I chose this language because I speak it, which matters for a project that
 requires reading model errors and judging whether a prediction is right. Error
 analysis on a language you cannot read reduces to repeating whatever the metric
-says.
-
-I chose financial and crypto discussion as the application because that is where
-a Pidgin sentiment model would actually be used in Nigeria. Peer-to-peer trading,
-mobile money and exchange platforms generate a large amount of Pidgin discussion,
-and a company wanting to know how users talk about its service would need exactly
-this tool. I follow that discussion closely, which helped when deciding whether a
-post expressed a stance or was simply explaining how something works.
+says. I also follow Nigerian crypto discussion closely, which helped when
+deciding whether a post expressed a stance or was simply explaining how
+something works.
 
 Sentiment models for Pidgin already exist. What does not exist, as far as I could
 find, is any labelled Pidgin data for the financial domain, so nobody has
@@ -152,6 +166,12 @@ problems.
 
 A model trained on this sees almost no neutral examples and is then tested on a
 split where neutral is a tenth of the data.
+
+![Class distribution across the three splits. Neutral is 1.5% of training data
+and 10.4% of the test set.](../results/figures/class_distribution.png)
+
+*Figure 1. Label distribution by split. The training and test splits are drawn
+from different label distributions, and the neutral class is the one that moves.*
 
 **The release leaks, and in places contradicts itself.**
 
@@ -352,7 +372,7 @@ Four pretrained encoders, chosen to separate kinds of pretraining:
 
 | model | pretraining | what it tests |
 |---|---|---|
-| `roberta-base` | English only | how far English pretraining alone gets you on an English-lexifier creole |
+| `roberta-base` (Liu et al., 2019) | English only | how far English pretraining alone gets you on an English-lexifier creole |
 | `xlm-roberta-base` | 100 languages, not Pidgin | whether general multilingual pretraining helps |
 | `Davlan/afro-xlmr-base` | 17 African languages including Pidgin | whether targeted adaptation helps |
 | `castorini/afriberta_base` | 11 African languages, under 1 GB | whether targeted but small pretraining beats broad but unfocused |
@@ -581,6 +601,12 @@ Test predictions from the seed-42 run, 4,154 posts, 1,272 wrong.
 | positive → negative | 490 | 35.1% |
 | positive → positive | 907 | 64.9% |
 
+![Confusion matrix on the AfriSenti test split. The neutral row is empty: no
+neutral prediction is ever made.](../results/figures/cm_afro-xlmr-base-weighted-seed42_test.png)
+
+*Figure 2. Confusion matrix on the AfriSenti test split, seed 42. Rows are true
+labels, columns predictions, shaded by row share. The neutral column is empty.*
+
 Neutral does not fail at random. It splits between the two poles, leaning
 negative, which is the direction the training distribution leans. The model has
 no neutral region at all; every post is pushed to one side or the other.
@@ -673,6 +699,13 @@ the first annotator's set did: 0.355 against 0.333 accuracy, 0.304 against 0.294
 macro F1, neutral F1 of 0.000 either way. The finding did not depend on which
 annotator was right about the contested posts, which is the strongest thing that
 can be said for it given a pre-adjudication kappa of 0.088.
+
+![Confusion matrix on the finance test set. Nearly half the posts are neutral and
+none are recognised.](../results/figures/cm_afro-xlmr-base-weighted-seed42_finance_test.png)
+
+*Figure 3. Confusion matrix on the adjudicated finance test set. 41 of the 93
+posts are neutral and the model assigns none of them correctly, which caps its
+accuracy at 55.9% before it classifies anything.*
 
 **The mechanism.** On the matched AfriSenti sample the model predicts negative
 66.5% of the time, and 61.7% really are negative. On the finance set it still
@@ -802,17 +835,27 @@ settles the question.
 
 ## 11. References
 
+Adelani, D. I., Doğruöz, A. S., Coneglian, A., & Ojha, A. K. (2024). Does
+generative AI speak Nigerian-Pidgin? Issues about representativeness and bias
+for multilingualism in LLMs. *arXiv:2404.19442*.
+
 Alabi, J. O., Adelani, D. I., Mosbach, M., & Klakow, D. (2022). Adapting
 pre-trained language models to African languages via multilingual adaptive
 fine-tuning. In *Proceedings of the 29th International Conference on
 Computational Linguistics* (pp. 4336–4349). International Committee on
 Computational Linguistics.
 
+Chainalysis. (2026). *The 2026 Global Crypto Adoption Index*. Chainalysis.
+
 Conneau, A., Khandelwal, K., Goyal, N., Chaudhary, V., Wenzek, G., Guzmán, F.,
 Grave, E., Ott, M., Zettlemoyer, L., & Stoyanov, V. (2020). Unsupervised
 cross-lingual representation learning at scale. In *Proceedings of the 58th
 Annual Meeting of the Association for Computational Linguistics* (pp.
 8440–8451). Association for Computational Linguistics.
+
+Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M.,
+Zettlemoyer, L., & Stoyanov, V. (2019). RoBERTa: A robustly optimized BERT
+pretraining approach. *arXiv:1907.11692*.
 
 Muhammad, S. H., Adelani, D. I., Ruder, S., Ahmad, I. S., Abdulmumin, I., Bello,
 B. S., Choudhury, M., Emezue, C. C., Abdullahi, S. S., Aremu, A., Jorge, A., &
