@@ -248,6 +248,34 @@ differs; and `nigerian-pidgin-eval` is distributed as an evaluation set, so it
 is used here only to test the data-scarcity hypothesis and never to report a
 score.
 
+### The finance test set and how it was labelled
+
+No labelled Pidgin data exists for financial text, so 130 posts were collected
+from public Nigerian crypto forum discussion and labelled by hand.
+
+Two native Pidgin speakers labelled independently against written guidelines
+fixed before any labelling began. Agreement was poor on the three-way sentiment
+task and much better on the other judgements:
+
+| judgement | posts | raw agreement | Cohen's kappa |
+|---|---|---|---|
+| what to exclude | 125 | 85.6% | 0.539 |
+| positive against negative | 33 | 69.7% | 0.368 |
+| all three sentiment classes | 92 | 40.2% | **0.088** |
+
+For comparison, Muhammad et al. (2023b) report 0.60 for Pidgin in AfriSenti.
+The disagreement sits almost entirely on neutral: the guidelines never said
+where explaining a product stops and recommending it begins.
+
+The 73 disputed posts were then adjudicated jointly; the 52 already agreed were
+left untouched. The settled labels match annotator 1 on 73.6% and annotator 2 on
+60.0%, so neither simply prevailed. The result is **93 usable posts**: 16
+negative, 41 neutral, 36 positive.
+
+The headline domain-transfer figure barely moved: 0.355 accuracy on the
+adjudicated set against 0.333 on the first annotator's alone. The finding does
+not rest on the contested posts.
+
 ### Measurement noise
 
 | source | size (macro F1) |
@@ -274,36 +302,74 @@ whole schedule and moves results about twice as much as reseeding does.
 ## Repository layout
 
 ```
-src/download_data.py   fetch the AfriSenti pcm splits
-src/prepare_data.py    audit, clean, write CSVs and the stats report
-src/config.py          paths, label order, seed
-src/evaluation.py      scoring, confusion matrices, experiment log
-src/baseline.py        TF-IDF + logistic regression
-src/finetune.py        transformer fine-tuning
-results/               metrics, figures, experiments.csv
-app/                   web interface
+src/
+  config.py                paths, label order, seed, shared by every stage
+  download_data.py         fetch the AfriSenti pcm splits
+  prepare_data.py          audit, clean, write the training/eval splits
+  data_figures.py          class distribution figure
+  evaluation.py            scoring, confusion matrices, experiment log
+  baseline.py              TF-IDF + logistic regression
+  bilstm.py                Word2Vec + BiLSTM
+  finetune.py              transformer fine-tuning
+  augment_neutral.py       add external neutral data, test the scarcity claim
+  results_table.py         experiments.csv -> report tables
+  seed_summary.py          mean and range across seeds
+  error_analysis.py        group errors by cause
+  collect_posts.py          gather candidate Pidgin finance posts
+  make_annotation_sheet.py  build the labelling sheet
+  import_labels.py          merge collected labels back into the sheet
+  build_finance_test.py     single-pass labels -> finance_test.csv
+  make_adjudication_sheet.py  list the posts the two annotators disputed
+  build_adjudicated_set.py  unanimous + adjudicated -> finance_test.csv
+  annotation_agreement.py   agreement, and what adjudication changed
+  evaluate_finance.py       domain transfer, with the length-matched control
+
+data/annotation/           collection guidelines, thread list, labelled sheet
+notebooks/                 end-to-end analysis with saved outputs
+results/                   metrics, figures, experiment log, written findings
+streamlit_app.py           the deployed interface
+reproduce.sh               every stage, in order
 ```
 
 ## Running it
 
+Training and evaluation need `requirements-train.txt`; the app needs only
+`requirements.txt`.
+
 ```bash
 python -m venv .venv
-.venv/Scripts/activate            # Windows
+.venv/Scripts/activate                                      # Windows
 pip install torch --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements-train.txt
 
 python src/download_data.py
 python src/prepare_data.py
 python src/baseline.py --class-weight balanced
-python src/finetune.py --model Davlan/afro-xlmr-base --class-weight
+python src/finetune.py --epochs 6 --model Davlan/afro-xlmr-base --class-weight
 ```
 
-Checkpoints are written to `./models` by default. Set `PIDGIN_MODEL_DIR` to put
-them somewhere else, which is worth doing if the project folder is inside a
-cloud-synced directory.
+`bash reproduce.sh` runs the whole pipeline in order, including the model
+comparison, the leakage controls, the seeded final runs and the error analysis.
 
-Trained on a single RTX 3060 Laptop GPU (6 GB), using mixed precision to fit the
-base-size models.
+The finance test set is collected and labelled separately:
+
+```bash
+python src/collect_posts.py --harvest-board 15 --max-pages 4        --min-words 15 --max-words 60
+python src/make_annotation_sheet.py
+#  ... two annotators label independently against GUIDELINES.md ...
+python src/import_labels.py <exported labels directory>
+python src/make_adjudication_sheet.py     # the disputed posts
+#  ... both annotators settle those together ...
+python src/build_adjudicated_set.py       # -> finance_test.csv
+python src/annotation_agreement.py        # -> results/annotation_agreement.md
+python src/evaluate_finance.py --checkpoint afro-xlmr-base-weighted-seed42
+```
+
+Checkpoints are written to `./models` by default; set `PIDGIN_MODEL_DIR` to
+keep them outside a cloud-synced folder.
+
+Trained on a single RTX 3060 Laptop GPU (6 GB), using mixed precision and
+per-batch padding to fit base-size models.
 
 ## Credits
 
