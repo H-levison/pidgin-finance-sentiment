@@ -10,8 +10,7 @@ general Pidgin tweets still work when people are talking about money".
 
 - Fine-tuned model: https://huggingface.co/HonourGod001/pidgin-sentiment-afroxlmr
 - Live app: https://pidgin-finance-sentiment-teqkbc7emkz6hhqlnaoex3.streamlit.app/
-- Demo video: _to add_
-- Report: _to add_
+- Demo video: https://youtu.be/QGdgaeoOr6k 
 
 The app is a Streamlit interface (`streamlit_app.py`) that loads the model from
 the Hugging Face Hub, so the same file runs locally and in the cloud:
